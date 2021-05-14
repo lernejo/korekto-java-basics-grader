@@ -1,38 +1,43 @@
 package com.github.lernejo.korekto.grader.basics;
 
-import com.github.lernejo.korekto.toolkit.*;
-import com.github.lernejo.korekto.toolkit.thirdparty.git.GitContext;
-import com.github.lernejo.korekto.toolkit.thirdparty.git.GitNature;
+import com.github.lernejo.korekto.grader.basics.parts.*;
+import com.github.lernejo.korekto.toolkit.Grader;
+import com.github.lernejo.korekto.toolkit.GradingConfiguration;
+import com.github.lernejo.korekto.toolkit.GradingContext;
 
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 public class JavaBasicsGrader implements Grader {
 
     @Override
     public void run(GradingConfiguration gradingConfiguration, GradingContext context) {
-        Optional<GitNature> optionalGitNature = context.getExercise().lookupNature(GitNature.class);
-        if (optionalGitNature.isEmpty()) {
-            context.getGradeDetails().getParts().add(new GradePart("exercise", 0D, 12D, List.of("Not a Git project")));
-        } else {
-            GitNature gitNature = optionalGitNature.get();
-            context.getGradeDetails().getParts().addAll(gitNature.withContext(c -> grade(gradingConfiguration, c, context.getExercise())));
-        }
+        LaunchingContext launchingContext = new LaunchingContext();
+        graders().stream()
+            .map(g -> g.grade(context.getExercise(), launchingContext))
+            .forEach(context.getGradeDetails().getParts()::add);
     }
 
-    private Collection<? extends GradePart> grade(GradingConfiguration configuration, GitContext git, Exercise exercise) {
-        return List.of();
+    private Collection<? extends PartGrader> graders() {
+        return List.of(
+            new Part1Grader(),
+            new Part2Grader(),
+            new Part3Grader(),
+            new Part4Grader(),
+            new Part5Grader(),
+            new Part6Grader(),
+            new Part7Grader()
+        );
     }
 
     @Override
     public Instant deadline(GradingContext context) {
-        return Instant.parse("2021-05-28T23:59:00.00Z");
+        return Instant.parse("2021-05-18T23:59:00.00Z");
     }
 
     @Override
     public String slugToRepoUrl(String slug) {
-        return "https://github.com/" + slug + "/java_basics_training";
+        return "https://github.com/" + slug + "/java_exercise_1";
     }
 }
