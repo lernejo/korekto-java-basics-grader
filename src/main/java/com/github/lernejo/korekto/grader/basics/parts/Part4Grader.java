@@ -1,12 +1,12 @@
 package com.github.lernejo.korekto.grader.basics.parts;
 
-import com.github.lernejo.korekto.grader.basics.CloseableProcess;
-import com.github.lernejo.korekto.toolkit.Exercise;
-import com.github.lernejo.korekto.toolkit.GradePart;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+
+import com.github.lernejo.korekto.grader.basics.CloseableProcess;
+import com.github.lernejo.korekto.toolkit.Exercise;
+import com.github.lernejo.korekto.toolkit.GradePart;
 
 public class Part4Grader implements PartGrader {
 
@@ -39,7 +39,7 @@ public class Part4Grader implements PartGrader {
             List<String> error = List.of("Expecting result of fibo with N=" + n + " to be **" + expectedResult + "** but was: `" + fiboResultRaw + '`');
             try {
                 int fiboResult = Integer.parseInt(fiboResultRaw);
-                if (fiboResult != expectedResult) {
+                if (!fiboResultRaw.contains(String.valueOf(fiboResult))) {
                     return result(error, 0D);
                 } else {
                     return result(List.of(), maxGrade() - (fiboInvite.isBlank() ? 0.5D : 0D));
