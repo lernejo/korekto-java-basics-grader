@@ -38,8 +38,7 @@ public class Part4Grader implements PartGrader {
             int expectedResult = fibo(n);
             List<String> error = List.of("Expecting result of fibo with N=" + n + " to be **" + expectedResult + "** but was: `" + fiboResultRaw + '`');
             try {
-                int fiboResult = Integer.parseInt(fiboResultRaw);
-                if (!fiboResultRaw.contains(String.valueOf(fiboResult))) {
+                if (!fiboResultRaw.contains(String.valueOf(expectedResult))) {
                     return result(error, 0D);
                 } else {
                     return result(List.of(), maxGrade() - (fiboInvite.isBlank() ? 0.5D : 0D));
