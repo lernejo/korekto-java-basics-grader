@@ -12,6 +12,11 @@ import java.util.List;
 public class JavaBasicsGrader implements Grader {
 
     @Override
+    public boolean needsWorkspaceReset() {
+        return true;
+    }
+
+    @Override
     public void run(GradingConfiguration gradingConfiguration, GradingContext context) {
         LaunchingContext launchingContext = new LaunchingContext();
         graders().stream()

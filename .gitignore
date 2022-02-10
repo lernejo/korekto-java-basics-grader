@@ -21,4 +21,6 @@ buildNumber.properties
 .env
 
 # Korekto
+slugs.txt
 slugs2.txt
+

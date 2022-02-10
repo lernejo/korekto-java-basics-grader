@@ -33,7 +33,7 @@ public class Part7Grader implements PartGrader {
             String predictWordInvite = readOutput(process.process).trim();
             writeInput(process.process, "The\n");
             String predictResult = readOutput(process.process).trim();
-            String expected = "the internet tend to using lorem ipsum is that a search for lorem ipsum is that a search for lorem";
+            String expected = "the internet tend to make a reader will be distracted by the internet tend to make a reader will be";
             if (!easyEquals(predictResult, expected)) {
                 return result(List.of("Expecting predict command result to be **" + expected + "** but was: `" + predictResult + '`'), 0D);
             }
