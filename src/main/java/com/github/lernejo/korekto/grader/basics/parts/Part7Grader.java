@@ -1,38 +1,41 @@
 package com.github.lernejo.korekto.grader.basics.parts;
 
-import com.github.lernejo.korekto.grader.basics.CloseableProcess;
-import com.github.lernejo.korekto.toolkit.Exercise;
 import com.github.lernejo.korekto.toolkit.GradePart;
+import com.github.lernejo.korekto.toolkit.PartGrader;
+import com.github.lernejo.korekto.toolkit.misc.InteractiveProcess;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
-public class Part7Grader implements PartGrader {
+import static com.github.lernejo.korekto.grader.basics.parts.LaunchingContext.classpathToPath;
+import static com.github.lernejo.korekto.grader.basics.parts.LaunchingContext.easyEquals;
+
+public class Part7Grader implements PartGrader<LaunchingContext> {
     @Override
     public String name() {
         return "Predict command";
     }
 
     @Override
-    public double maxGrade() {
-        return 3;
+    public Double maxGrade() {
+        return 3.0;
     }
 
     @Override
-    public GradePart grade(Exercise exercise, LaunchingContext launchingContext) {
-        if (!launchingContext.compilationFailures.isEmpty()) {
+    public GradePart grade(LaunchingContext context) {
+        if (!context.compilationFailures.isEmpty()) {
             return result(List.of("Cannot launch program with compilation issues"), 0D);
         }
         Path text1Path = classpathToPath("text1.txt");
-        try (CloseableProcess process = new CloseableProcess(launchingContext.processBuilder.start())) {
-            readOutput(process.process); // optional welcome message
-            writeInput(process.process, "predict\n");
-            String predictInvite = readOutput(process.process).trim();
-            writeInput(process.process, text1Path.toString() + '\n');
-            String predictWordInvite = readOutput(process.process).trim();
-            writeInput(process.process, "The\n");
-            String predictResult = readOutput(process.process).trim();
+        try (InteractiveProcess process = new InteractiveProcess(context.startLauncherProgram())) {
+            process.read(); // optional welcome message
+            process.write("predict\n");
+            process.read(); // predict path invite
+            process.write(text1Path.toString() + '\n');
+            process.read(); // predict word invite
+            process.write("The\n");
+            String predictResult = process.read().trim();
             String expected = "the internet tend to make a reader will be distracted by the internet tend to make a reader will be";
             if (!easyEquals(predictResult, expected)) {
                 return result(List.of("Expecting predict command result to be **" + expected + "** but was: `" + predictResult + '`'), 0D);

@@ -1,14 +1,14 @@
 package com.github.lernejo.korekto.grader.basics.parts;
 
+import com.github.lernejo.korekto.toolkit.GradePart;
+import com.github.lernejo.korekto.toolkit.PartGrader;
+import com.github.lernejo.korekto.toolkit.misc.InteractiveProcess;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-import com.github.lernejo.korekto.grader.basics.CloseableProcess;
-import com.github.lernejo.korekto.toolkit.Exercise;
-import com.github.lernejo.korekto.toolkit.GradePart;
-
-public class Part4Grader implements PartGrader {
+public class Part4Grader implements PartGrader<LaunchingContext> {
 
     private final Random random = new Random();
 
@@ -18,23 +18,23 @@ public class Part4Grader implements PartGrader {
     }
 
     @Override
-    public double maxGrade() {
-        return 1;
+    public Double maxGrade() {
+        return 1.0;
     }
 
     @Override
-    public GradePart grade(Exercise exercise, LaunchingContext launchingContext) {
-        if (!launchingContext.compilationFailures.isEmpty()) {
+    public GradePart grade(LaunchingContext context) {
+        if (!context.compilationFailures.isEmpty()) {
             return result(List.of("Cannot launch program with compilation issues"), 0D);
         }
-        try (CloseableProcess process = new CloseableProcess(launchingContext.processBuilder.start())) {
-            readOutput(process.process); // optional welcome message
-            writeInput(process.process, "fibo\n");
-            String fiboInvite = readOutput(process.process).trim();
+        try (InteractiveProcess process = new InteractiveProcess(context.startLauncherProgram())) {
+            process.read(); // optional welcome message
+            process.write("fibo\n");
+            String fiboInvite = process.read().trim();
 
             int n = random.nextInt(10) + 3;
-            writeInput(process.process, String.valueOf(n) + '\n');
-            String fiboResultRaw = readOutput(process.process).trim();
+            process.write(String.valueOf(n) + '\n');
+            String fiboResultRaw = process.read().trim();
             int expectedResult = fibo(n);
             List<String> error = List.of("Expecting result of fibo with N=" + n + " to be **" + expectedResult + "** but was: `" + fiboResultRaw + '`');
             try {

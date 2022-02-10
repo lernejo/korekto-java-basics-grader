@@ -1,38 +1,38 @@
 package com.github.lernejo.korekto.grader.basics.parts;
 
-import com.github.lernejo.korekto.grader.basics.CloseableProcess;
-import com.github.lernejo.korekto.toolkit.Exercise;
 import com.github.lernejo.korekto.toolkit.GradePart;
+import com.github.lernejo.korekto.toolkit.PartGrader;
+import com.github.lernejo.korekto.toolkit.misc.InteractiveProcess;
 
 import java.io.IOException;
 import java.util.List;
 
-public class Part3Grader implements PartGrader {
+public class Part3Grader implements PartGrader<LaunchingContext> {
     @Override
     public String name() {
         return "The loop";
     }
 
     @Override
-    public double maxGrade() {
-        return 1;
+    public Double maxGrade() {
+        return 1.0;
     }
 
     @Override
-    public GradePart grade(Exercise exercise, LaunchingContext launchingContext) {
-        if (!launchingContext.compilationFailures.isEmpty()) {
+    public GradePart grade(LaunchingContext context) {
+        if (!context.compilationFailures.isEmpty()) {
             return result(List.of("Cannot launch program with compilation issues"), 0D);
         }
         int count = 0;
-        try (CloseableProcess process = new CloseableProcess(launchingContext.processBuilder.start())) {
-            readOutput(process.process); // optional welcome message
+        try (InteractiveProcess process = new InteractiveProcess(context.startLauncherProgram())) {
+            process.read(); // optional welcome message
 
             do {
-                writeInput(process.process, "toto\n");
+                process.write("toto\n");
                 count++;
-            } while (process.process.isAlive() && count < 10);
+            } while (process.getProcess().isAlive() && count < 10);
 
-            writeInput(process.process, "quit\n"); // give it a chance to quit normally
+            process.write("quit\n"); // give it a chance to quit normally
         } catch (IOException | RuntimeException e) {
             return result(List.of("Cannot start Launcher: " + e.getMessage()), 0D);
         }
