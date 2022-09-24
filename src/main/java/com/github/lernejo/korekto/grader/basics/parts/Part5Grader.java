@@ -7,9 +7,10 @@ import com.github.lernejo.korekto.toolkit.misc.InteractiveProcess;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.github.lernejo.korekto.grader.basics.parts.LaunchingContext.classpathToPath;
-import static com.github.lernejo.korekto.grader.basics.parts.LaunchingContext.easyEquals;
 
 public class Part5Grader implements PartGrader<LaunchingContext> {
     @Override
@@ -33,10 +34,10 @@ public class Part5Grader implements PartGrader<LaunchingContext> {
             process.write("freq\n");
             process.read(); // freq invite for entering a file path
             process.write(text1Path.toString() + '\n');
-            String freqResult = process.read().trim();
-            String expected = "the lorem of";
-            if (!easyEquals(freqResult, expected)) {
-                return result(List.of("Expecting freq command result to be **" + expected + "** but was: `" + freqResult + '`'), 0D);
+            String freqResult = process.read().trim().toLowerCase();
+            Set<String> expected = Set.of("the", "lorem", "of");
+            if (!expected.stream().allMatch(expected::contains)) {
+                return result(List.of("Expecting freq command result to contain **" + expected.stream().collect(Collectors.joining(", ")) + "** but was: `" + freqResult + '`'), 0D);
             }
         } catch (IOException | RuntimeException e) {
             return result(List.of("Cannot start Launcher: " + e.getMessage()), 0D);
