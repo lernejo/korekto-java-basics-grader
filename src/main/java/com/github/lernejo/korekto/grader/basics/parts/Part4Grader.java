@@ -6,6 +6,7 @@ import com.github.lernejo.korekto.toolkit.misc.InteractiveProcess;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class Part4Grader implements PartGrader<LaunchingContext> {
@@ -30,7 +31,7 @@ public class Part4Grader implements PartGrader<LaunchingContext> {
         try (InteractiveProcess process = new InteractiveProcess(context.startLauncherProgram())) {
             process.read(); // optional welcome message
             process.write("fibo\n");
-            String fiboInvite = process.read().trim();
+            String fiboInvite = Objects.requireNonNullElse(process.read(), "").trim();
 
             int n = random.nextInt(10) + 3;
             process.write(String.valueOf(n) + '\n');
@@ -40,8 +41,10 @@ public class Part4Grader implements PartGrader<LaunchingContext> {
             try {
                 if (!fiboResultRaw.contains(String.valueOf(expectedResult))) {
                     return result(error, 0D);
+                } else if(fiboInvite.isBlank()) {
+                    return result(List.of("No message prompted in fibo asking for the user to enter a number"), maxGrade() / 2);
                 } else {
-                    return result(List.of(), maxGrade() - (fiboInvite.isBlank() ? 0.5D : 0D));
+                    return result(List.of(), maxGrade());
                 }
             } catch (NumberFormatException e) {
                 return result(error, 0D);
