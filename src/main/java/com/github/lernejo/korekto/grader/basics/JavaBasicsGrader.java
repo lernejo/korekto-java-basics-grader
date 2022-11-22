@@ -3,13 +3,17 @@ package com.github.lernejo.korekto.grader.basics;
 import com.github.lernejo.korekto.grader.basics.parts.*;
 import com.github.lernejo.korekto.toolkit.*;
 import com.github.lernejo.korekto.toolkit.misc.HumanReadableDuration;
+import com.github.lernejo.korekto.toolkit.misc.ThrowingFunction;
+import com.github.lernejo.korekto.toolkit.thirdparty.github.GitHubNature;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class JavaBasicsGrader implements Grader<LaunchingContext> {
@@ -27,6 +31,15 @@ public class JavaBasicsGrader implements Grader<LaunchingContext> {
     }
 
     private Collection<? extends GradePart> grade(LaunchingContext context) {
+        Optional<GitHubNature> gitHubNature = context.getExercise().lookupNature(GitHubNature.class);
+        if(gitHubNature.isPresent()) {
+            try {
+                System.out.println(gitHubNature.get().getContext().getGitHub().getRateLimit());
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
         return graders().stream()
             .map(g -> applyPartGrader(context, g))
             .collect(Collectors.toList());

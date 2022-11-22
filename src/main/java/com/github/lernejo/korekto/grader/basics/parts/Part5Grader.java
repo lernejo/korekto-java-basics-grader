@@ -36,7 +36,7 @@ public class Part5Grader implements PartGrader<LaunchingContext> {
             process.write(text1Path.toString() + '\n');
             String freqResult = process.read().trim().toLowerCase();
             Set<String> expected = Set.of("the", "lorem", "of");
-            if (!expected.stream().allMatch(expected::contains)) {
+            if (!expected.stream().allMatch(freqResult::contains)) {
                 return result(List.of("Expecting freq command result to contain **" + expected.stream().collect(Collectors.joining(", ")) + "** but was: `" + freqResult + '`'), 0D);
             }
         } catch (IOException | RuntimeException e) {
