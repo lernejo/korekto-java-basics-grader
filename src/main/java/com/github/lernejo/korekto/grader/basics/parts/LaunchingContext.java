@@ -10,13 +10,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class LaunchingContext extends GradingContext {
 
     final List<String> compilationFailures = new ArrayList<>();
+    final Map<String, List<String>> firstWords;
 
-    public LaunchingContext(GradingConfiguration configuration) {
+    public LaunchingContext(GradingConfiguration configuration, Map<String, List<String>> firstWords) {
         super(configuration);
+        this.firstWords = firstWords;
     }
 
     Path binPath() {
@@ -37,12 +40,16 @@ public class LaunchingContext extends GradingContext {
         return actual != null && actual.replace("\s", "").toLowerCase().contains(easyExpected);
     }
 
-    static Path classpathToPath(String classPath) {
-        URL resource = Part5Grader.class.getClassLoader().getResource(classPath);
+    public static Path classpathToPath(String classPath) {
+        URL resource = LaunchingContext.class.getClassLoader().getResource(classPath);
         try {
             return Paths.get(resource.toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    Map.Entry<String, List<String>> chooseFirstWord() {
+        return List.copyOf(firstWords.entrySet()).get(getRandomSource().nextInt(firstWords.size()));
     }
 }

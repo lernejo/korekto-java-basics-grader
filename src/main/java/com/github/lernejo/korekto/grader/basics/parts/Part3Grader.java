@@ -26,7 +26,9 @@ public class Part3Grader implements PartGrader<LaunchingContext> {
         int count = 0;
         try (InteractiveProcess process = new InteractiveProcess(context.startLauncherProgram())) {
             process.read(); // optional welcome message
-
+            if (!process.getProcess().isAlive()) {
+                return result(List.of("Process exited prematurely"), 0D);
+            }
             do {
                 process.write("toto\n");
                 count++;

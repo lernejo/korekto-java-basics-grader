@@ -48,6 +48,9 @@ public class Part2Grader implements PartGrader<LaunchingContext> {
         ValueOrGradePart<String> unknownCommandOutput;
         try (InteractiveProcess process = new InteractiveProcess(launchingContext.startLauncherProgram())) {
             process.read(); // optional welcome message
+            if (!process.getProcess().isAlive()) {
+                return ValueOrGradePart.gradePart(result(List.of("Process exited prematurely"), 0D));
+            }
             process.write("toto\n");
             unknownCommandOutput = ValueOrGradePart.value(process.read());
             if (process.getProcess().isAlive()) {

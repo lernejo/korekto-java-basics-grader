@@ -33,7 +33,7 @@ public class Part6Grader implements PartGrader<LaunchingContext> {
         try {
             content = Files.readString(launcherPath);
         } catch (IOException e) {
-            return result(List.of("Unable to read **src/Launcher.java** file: " + e.getMessage()), 0D);
+            return result(List.of("Unable to read **src/Launcher.java** file: " + e.getClass().getSimpleName()), 0D);
         }
         if (ILLEGAL_COMMAND_NAMES.stream().anyMatch(content::contains)) {
             return result(List.of("refactoring not performed, there is still references of command names"), 0D);

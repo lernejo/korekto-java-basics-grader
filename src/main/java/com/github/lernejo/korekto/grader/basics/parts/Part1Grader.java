@@ -20,6 +20,7 @@ import static com.github.lernejo.korekto.grader.basics.parts.LaunchingContext.ea
 public class Part1Grader implements PartGrader<LaunchingContext> {
     @Override
     public String name() {
+        System.out.println();
         return "Hello World";
     }
 
@@ -31,11 +32,15 @@ public class Part1Grader implements PartGrader<LaunchingContext> {
     @Override
     public GradePart grade(LaunchingContext context) {
         Path binPath = context.binPath();
-        if (Files.exists(binPath) && !Files.isDirectory(binPath)) {
-            try {
-                Files.delete(binPath);
-            } catch (IOException e) {
-                return result(List.of("Unable to delete bin file (conflicting with output folder): " + e.getMessage()), 0D);
+        if (Files.exists(binPath)) {
+            if (!Files.isDirectory(binPath)) {
+                try {
+                    Files.delete(binPath);
+                } catch (IOException e) {
+                    return result(List.of("Unable to delete bin file (conflicting with output folder): " + e.getMessage()), 0D);
+                }
+            } else {
+                Processes.launch(OS.Companion.getCURRENT_OS().deleteDirectoryCommand(binPath));
             }
         }
         if (!Files.exists(binPath)) {

@@ -3,7 +3,6 @@ package com.github.lernejo.korekto.grader.basics;
 import com.github.lernejo.korekto.grader.basics.parts.*;
 import com.github.lernejo.korekto.toolkit.*;
 import com.github.lernejo.korekto.toolkit.misc.HumanReadableDuration;
-import com.github.lernejo.korekto.toolkit.misc.ThrowingFunction;
 import com.github.lernejo.korekto.toolkit.thirdparty.github.GitHubNature;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -13,12 +12,19 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class JavaBasicsGrader implements Grader<LaunchingContext> {
 
     private final Logger logger = LoggerFactory.getLogger(JavaBasicsGrader.class);
+
+    private final Map<String, List<String>> firstWords;
+
+    public JavaBasicsGrader() {
+        firstWords = Part7Grader.findDeterministicFirstWords("text1.txt", 20);
+    }
 
     @Override
     public boolean needsWorkspaceReset() {
@@ -32,7 +38,7 @@ public class JavaBasicsGrader implements Grader<LaunchingContext> {
 
     private Collection<? extends GradePart> grade(LaunchingContext context) {
         Optional<GitHubNature> gitHubNature = context.getExercise().lookupNature(GitHubNature.class);
-        if(gitHubNature.isPresent()) {
+        if (gitHubNature.isPresent()) {
             try {
                 System.out.println(gitHubNature.get().getContext().getGitHub().getRateLimit());
             } catch (IOException e) {
@@ -79,6 +85,6 @@ public class JavaBasicsGrader implements Grader<LaunchingContext> {
     @NotNull
     @Override
     public LaunchingContext gradingContext(@NotNull GradingConfiguration configuration) {
-        return new LaunchingContext(configuration);
+        return new LaunchingContext(configuration, firstWords);
     }
 }

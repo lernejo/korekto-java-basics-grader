@@ -11,8 +11,6 @@ import java.util.Random;
 
 public class Part4Grader implements PartGrader<LaunchingContext> {
 
-    private final Random random = new Random();
-
     @Override
     public String name() {
         return "Fibonacci command";
@@ -30,12 +28,15 @@ public class Part4Grader implements PartGrader<LaunchingContext> {
         }
         try (InteractiveProcess process = new InteractiveProcess(context.startLauncherProgram())) {
             process.read(); // optional welcome message
+            if (!process.getProcess().isAlive()) {
+                return result(List.of("Process exited prematurely"), 0D);
+            }
             process.write("fibo\n");
             String fiboInvite = Objects.requireNonNullElse(process.read(), "").trim();
 
-            int n = random.nextInt(10) + 3;
+            int n = context.getRandomSource().nextInt(10) + 3;
             process.write(String.valueOf(n) + '\n');
-            String fiboResultRaw = process.read().trim();
+            String fiboResultRaw = Objects.requireNonNullElse(process.read(), "").trim();
             int expectedResult = fibo(n);
             List<String> error = List.of("Expecting result of fibo with N=" + n + " to be **" + expectedResult + "** but was: `" + fiboResultRaw + '`');
             try {
