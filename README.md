@@ -1,5 +1,5 @@
 # korekto-java-basics-grader
-Korekto grader for Java basics exercise
+Korekto grader for Java basics exercise.
 
 [![Build](https://github.com/lernejo/korekto-java-basics-grader/actions/workflows/build.yml/badge.svg)](https://github.com/lernejo/korekto-java-basics-grader/actions)
 [![codecov](https://codecov.io/gh/lernejo/korekto-java-basics-grader/branch/main/graph/badge.svg?token=EUNNO5IANB)](https://codecov.io/gh/lernejo/korekto-java-basics-grader)
