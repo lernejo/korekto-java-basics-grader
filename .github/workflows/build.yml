@@ -19,3 +19,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - run: ./mvnw -U test -Dgithub_token=${{ secrets.GH_TOKEN_REPO }} -DfailIfNoTests
+      - uses: codecov/codecov-action@v3
+        with:
+          verbose: true
