@@ -27,6 +27,11 @@ public class JavaBasicsGrader implements Grader<LaunchingContext> {
     }
 
     @Override
+    public String name() {
+        return "Java 1\uFE0F⃣ 0\uFE0F⃣1\uFE0F⃣ ";
+    }
+
+    @Override
     public boolean needsWorkspaceReset() {
         return true;
     }
