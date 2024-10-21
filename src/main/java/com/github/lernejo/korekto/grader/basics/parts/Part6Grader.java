@@ -2,6 +2,7 @@ package com.github.lernejo.korekto.grader.basics.parts;
 
 import com.github.lernejo.korekto.toolkit.GradePart;
 import com.github.lernejo.korekto.toolkit.PartGrader;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,20 +10,11 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
-public class Part6Grader implements PartGrader<LaunchingContext> {
+public record Part6Grader(String name, Double maxGrade) implements PartGrader<LaunchingContext> {
 
     private static final Set<String> ILLEGAL_COMMAND_NAMES = Set.of("\"fibo\"", "\"freq\"", "\"quit\"", "\"predict\"");
 
-    @Override
-    public String name() {
-        return "Refactoring";
-    }
-
-    @Override
-    public Double maxGrade() {
-        return 2.0;
-    }
-
+    @NotNull
     @Override
     public GradePart grade(LaunchingContext context) {
         if (!context.compilationFailures.isEmpty()) {
@@ -38,7 +30,7 @@ public class Part6Grader implements PartGrader<LaunchingContext> {
         if (ILLEGAL_COMMAND_NAMES.stream().anyMatch(content::contains)) {
             return result(List.of("refactoring not performed, there is still references of command names"), 0D);
         } else {
-            return result(List.of(), maxGrade());
+            return result(List.of(), maxGrade);
         }
     }
 }

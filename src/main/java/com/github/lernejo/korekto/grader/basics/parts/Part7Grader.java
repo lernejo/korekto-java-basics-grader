@@ -4,6 +4,7 @@ import com.github.lernejo.korekto.toolkit.GradePart;
 import com.github.lernejo.korekto.toolkit.PartGrader;
 import com.github.lernejo.korekto.toolkit.misc.InteractiveProcess;
 import com.github.lernejo.korekto.toolkit.misc.ThrowingFunction;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,19 +16,9 @@ import java.util.stream.Collectors;
 import static com.github.lernejo.korekto.grader.basics.parts.LaunchingContext.classpathToPath;
 import static com.github.lernejo.korekto.grader.basics.parts.LaunchingContext.easyEquals;
 
-public class Part7Grader implements PartGrader<LaunchingContext> {
+public record Part7Grader(String name, Double maxGrade) implements PartGrader<LaunchingContext> {
 
-
-    @Override
-    public String name() {
-        return "Predict command";
-    }
-
-    @Override
-    public Double maxGrade() {
-        return 3.0;
-    }
-
+    @NotNull
     @Override
     public GradePart grade(LaunchingContext context) {
         if (!context.compilationFailures.isEmpty()) {
@@ -35,7 +26,7 @@ public class Part7Grader implements PartGrader<LaunchingContext> {
         }
         Path text1Path = classpathToPath("text1.txt");
         var firstWord = context.chooseFirstWord();
-        String expected = firstWord.getValue().stream().collect(Collectors.joining(" "));
+        String expected = String.join(" ", firstWord.getValue());
         try (InteractiveProcess process = new InteractiveProcess(context.startLauncherProgram())) {
             process.read(); // optional welcome message
             if (!process.getProcess().isAlive()) {
@@ -54,7 +45,7 @@ public class Part7Grader implements PartGrader<LaunchingContext> {
         } catch (IOException | RuntimeException e) {
             return result(List.of("Cannot start Launcher: " + e.getMessage()), 0D);
         }
-        return result(List.of(), maxGrade());
+        return result(List.of(), maxGrade);
     }
 
     public static Map<String, List<String>> findDeterministicFirstWords(String file, int sentenceLength) {

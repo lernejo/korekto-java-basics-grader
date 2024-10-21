@@ -1,0 +1,189 @@
+= Java : notions de base
+:tip-caption: 💡
+:note-caption: ℹ️
+:warning-caption: ⚠️
+:icons: font
+:hardbreaks-option:
+
+Préfixé par ✔️, des "checkpoints" pour vous aider à vérifier que vous avez tout bon.
+
+La correction est automatique, prenez donc soin de respecter les indications les plus précises.
+
+== Objectif
+
+Prendre en main les mot-clés du langage et les structures de contrôle en construisant un programme accessible en ligne de commande.
+
+== Prérequis
+
+* Git
+* Java 21
+* Maven 3.9.x
+* (Optionnel, mais fortement recommandé) IntelliJ edition _community_ 2024
+
+'''
+
+== Partie 1 - Hello World et compilation
+
+* Créer un nouveau dépôt Git **privé** sur la plateforme GitHub avec le nom **java_exercise_1** [.underline]#initialisé# avec un fichier README.md (case à cocher dans le formulaire de création de dépôt)
+* Inviter le professeur actuel comme membre du dépôt (pour la correction)
+* Cloner ce nouveau dépôt en utilisant l’**url SSH**
+* La branche par défaut est la branche **main** c’est sur celle-ci que nous allons travailler
+* Créer deux répertoires **src** et **bin** qui contiendront respectivement les sources (fichiers *.java) et les fichiers compilés (fichiers *.class)
+* Ajouter une classe `HelloWorld` qui contiendra une fonction `main` et qui affichera le message `Hello World` dans la sortie standard
+* Créer un fichier **compile.sh** qui compilera tous les fichiers sources du dossier **src** dans le dossier **bin**
+
+[NOTE]
+====
+Le compilateur Java est disponible à travers la commande `javac`.
+La liste complète des options de cette commande est disponible en lançant `javac --help`.
+
+L’option qui nous intéresse aujourd’hui est `-d` permettant de spécifier le répertoire dans lequel placer les fichiers compilés.
+
+La commande complète est donc `javac -d bin $(find ./src/ -type f -name '*.java')`
+====
+
+* Exécuter le script
+* Lancer ce premier programme
+
+[NOTE]
+====
+La machine virtuelle Java est disponible à travers la commande `java`.
+La liste complète des options de cette commande est disponible en lançant `java --help`.
+
+L’option qui nous intéresse aujourd’hui est `-cp` permettant de déclarer le chemin vers les fichiers compilés.
+
+La commande complète est donc `java -cp bin HelloWorld`
+====
+
+* Créer un fichier **.gitignore** contenant les lignes `bin/` et `out/` afin de ne pas commiter les fichiers générés
+* Indexer et commiter les fichiers nouvellement créés, sans oublier d’ajouter le bit d’exécution du fichier **compile.sh** à l’index git
+* ✔️ Le commit doit contenir 3 fichiers :
+** .gitignore
+** compile.sh
+** src/HelloWorld.java
+
+## Partie 2 - Interactions en ligne de commande
+
+A partir de là, il est conseillé d’ouvrir le projet (dossier contenant **src** et **bin**) avec IntelliJ afin de faciliter l’édition de code Java.
+
+Nous allons écrire un programme dont le comportement sera dépendant de ce que l’utilisateur écrira dans la console.
+
+[NOTE]
+====
+Pour ouvrir un projet existant avec IntelliJ, utiliser le menu **File** -> **New** -> **Project from Existing Sources** et sélectionner le répertoire _racine_.
+
+Ensuite pour indiquer que le répertoire **src** contient des fichiers Java à compiler, cliquer droit sur le dossier **src** et **Mark Directory as** -> **Sources Root**.
+
+Pour spécifier le JDK à utiliser, cliquer droit sur le dossier racine et **Open Module Settings** -> **Project Settings** -> **Project** -> **SDK** et sélectionner JDK17 (après avoir importé le JDK précédemment installé si c’est la première fois).
+====
+
+* Créer une seconde classe `Launcher` contenant elle aussi une fonction `main`
+* Afficher un texte de bienvenue
+* Assigner à une variable une instance de la classe `java.util.Scanner` dont le constructeur prendra comme paramètre `System.in`
+
+[NOTE]
+====
+`System.in` est l’entrée standard (FD 0) du programme.
+
+De même, `System.out` et `System.err` sont respectivement la sortie standard (FD 1) et la sortie d’erreur standard (FD 2).
+
+La classe `Scanner` est un utilitaire permettant de manipuler plus simplement un `InputStream` tel que `System.in`, grâce à des méthodes comme `nextLine` permettant de récupérer la prochaine entrée utilisateur (validée par un saut de ligne).
+====
+
+* Récupérer la prochaine entrée utilisateur dans une variable
+* Si cette entrée est égale à `"quit"`, laisser la méthode se terminer, et le programme se finir
+* Sinon afficher `"Unknown command"` avant la fin du programme
+* ✔️ le programme doit compiler (grâce au script précédemment créé) et être lançable sans erreur grâce à la commande `java -cp bin Launcher`
+* Publier et pousser ces modifications sur GitHub
+
+## Partie 3 - boucle
+
+* Introduire une boucle afin de ne pas obliger l’utilisateur à relancer le programme en cas de commande inconnue
+* ✔️ Le comportement du programme doit maintenant être d’afficher `"Unknown command"` en boucle, sauf si l’utilisateur écrit **quit**
+* Publier et pousser ces modifications sur GitHub
+
+## Partie 4 - une première commande
+
+* Ajouter la possibilité de taper la commande **fibo** qui demandera alors un nombre **n** à l’utilisateur avec une question explicite et renverra la valeur de la suite de Fibonacci à l’index **n**
+
+[NOTE]
+====
+La suite de Fibonacci peut être exprimée comme ceci :
+
+* F(0) = 0
+* F(1) = 1
+* F(n) = F(n-1) + F(n-2)
+
+Ainsi F(10) = 55
+====
+
+[NOTE]
+====
+Les méthodes `next...` de la classe `Scanner` autres que `nextLine`, telles que `nextInt` ne consomment pas le caractère `\n`, il est donc nécessaire d’appeler `nextLine` en suivant, juste pour consommer ce caractère et éviter qu’un appel ultérieur à `nextLine` retourne une `String` vide.
+====
+
+* Publier et pousser ces modifications sur GitHub
+
+## Partie 5 - une seconde commande
+
+L’objectif est de créer un programme permettant à l’utilisateur de connaitre, au sein d’un texte qu’il propose au programme, les 3 mots les plus utilisés dans ce texte.
+* Ajouter la possibilité de taper la commande **freq** qui demandera alors un chemin de fichier à l’utilisateur avec une question explicite
+* Essayer de lire le contenu du fichier grâce à la méthode statique utilitaire `java.nio.file.Files.readString` prenant en paramètre un objet de type `Path`.
+Un tel objet peut être construit grâce à la méthode statique `Paths.get` prenant en paramètre un chemin de fichier
+** en cas d’échec, afficher le message `"Unreadable file: "` suivi du nom de la classe de l’exception et de son message
+** en cas de succès, afficher sur une même ligne les 3 mots les plus fréquents, un mot étant séparé d’un autre par un espace
+
+[NOTE]
+====
+Vous pouvez notamment utiliser :
+
+* `String#replaceAll` pour remplacer tous les caractères de ponctuation par des espaces
+* `String#toLowerCase` pour transformer toutes les majuscules en minuscules
+* `String#split` pour séparer les mots les uns des autres et les stcoker dans un tableau
+* `String#isBlank` pour savoir si un `String` est vide ou uniquement constitués d’espaces
+* `Arrays#stream` pour transformer un tableau en `Stream`
+* `Collectors#groupingBy` pour créer un `Collector` regroupant les éléments ayant une caractéristique commune
+* `Collectors#counting` pour créer un `Collector` comptant les éléments
+* `Stream#limit` pour ne garder que les _n_ premiers éléments
+* `Stream#sorted` pour trier les éléments selon un `Comparator`
+* `Comparator#comparing` pour créer un `Comparator` basé sur un champ. Exemple : `Comparator.comparing\((Person p) \-> p.age())` créera un comparateur de `Person` basé sur l’age
+====
+
+* Publier et pousser ces modifications sur GitHub
+
+## Partie 6 - un peu de _refactoring_
+
+Le _refactoring_ est une phase du développement qui ne change pas le comportement d’un programme mais facilite sa compréhension et les évolutions futures.
+Ici nous allons sortir la logique des différentes commandes dans des classes dédiées, afin de ne pas avoir à allonger la méthode `main`
+
+* Créer une interface `Command` avec deux méthodes abstraites
+** `name` renvoyant un `String`
+** `run` renvoyant un `boolean` et prenant en paramètre un objet de type Scanner
+
+* Créer trois classes `Quit`, `Fibo` et `Freq` implémentant `Command` et reprenant chacune le fonctionnement d’une des trois commandes existantes.
+** la valeur retournée par la méthode `name` est ce que l’utilisateur doit écrire pour accéder à la commande
+** le `boolean` renvoyé par la méthode `run` est ce qui décidera la boucle à s’interrompre
+* Changer le code de la fonction main en
+** créant une variable de type `List<Command>` et contenant une instance de chaque implémentation de `Command`
+** changeant le code à l’intérieur de la boucle pour
+*** prendre une entrée utilisateur
+*** chercher une commande correspondante dans la liste
+*** afficher **Unknown command** en cas d’échec et recommencer la boucle
+*** exécuter la méthode `run` de la commande trouvée en lui passant la variable de type `Scanner` en paramètre
+*** si le boolean de retour de cette méthode est `true`, laisser le programme se terminer
+*** sinon recommencer la boucle
+* Publier et pousser ces modifications sur GitHub
+
+## Partie 7 - une dernière commande
+
+L’objectif de cette partie finale est d’implémenter un algorithme de prédiction en fonction de la fréquence
+d’utilisation de mots d’un texte, classiquement utilisé sur les téléphones portables.
+
+* Créer une nouvelle commande `Predict` se déclenchant quand l’utilisateur écrit **predict**.
+* Cette commande demandera un chemin de fichier à l’utilisateur avec une question explicite pour apprendre le lexique du texte
+* en cas d’échec de la lecture, afficher le message `"Unreadable file: "` suivi du nom de la classe de l’exception et de son message
+* dans le cas où le texte est lu avec succès par le programme, la commande calculera pour chaque mot, le mot le plus fréquent arrivant juste après
+* finalement le programme demandera à l’utilisateur d’écrire un mot
+** si le mot n’existe pas dans le texte analysé, afficher un message d’erreur
+** si le mot existe, reconstituer et afficher la phrase statistiquement la plus plausible avec une limite de 20 mots
+* Publier et pousser ces modifications sur GitHub

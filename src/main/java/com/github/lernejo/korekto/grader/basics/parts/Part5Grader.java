@@ -4,6 +4,7 @@ import com.github.lernejo.korekto.toolkit.GradePart;
 import com.github.lernejo.korekto.toolkit.PartGrader;
 import com.github.lernejo.korekto.toolkit.misc.InteractiveProcess;
 import com.github.lernejo.korekto.toolkit.misc.ThrowingFunction;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,17 +17,9 @@ import java.util.stream.Stream;
 
 import static com.github.lernejo.korekto.grader.basics.parts.LaunchingContext.classpathToPath;
 
-public class Part5Grader implements PartGrader<LaunchingContext> {
-    @Override
-    public String name() {
-        return "Frequency command";
-    }
+public record Part5Grader(String name, Double maxGrade) implements PartGrader<LaunchingContext> {
 
-    @Override
-    public Double maxGrade() {
-        return 1.0;
-    }
-
+    @NotNull
     @Override
     public GradePart grade(LaunchingContext context) {
         if (!context.compilationFailures.isEmpty()) {
@@ -45,12 +38,12 @@ public class Part5Grader implements PartGrader<LaunchingContext> {
             String freqResult = Objects.requireNonNullElse(process.read(), "").trim().toLowerCase();
             Collection<String> expected = take(occurrencesByWord.keySet(), 3);
             if (!expected.stream().allMatch(freqResult::contains)) {
-                return result(List.of("Expecting freq command result to contain **" + expected.stream().collect(Collectors.joining(", ")) + "** but was: `" + freqResult + "`. 6 most occurring words being " + occurrencesByWord), 0D);
+                return result(List.of("Expecting freq command result to contain **" + String.join(", ", expected) + "** but was: `" + freqResult + "`. 6 most occurring words being " + occurrencesByWord), 0D);
             }
         } catch (IOException | RuntimeException e) {
             return result(List.of("Cannot start Launcher: " + e.getMessage()), 0D);
         }
-        return result(List.of(), maxGrade());
+        return result(List.of(), maxGrade);
     }
 
     private List<String> take(Collection<String> values, int max) {
@@ -66,6 +59,7 @@ public class Part5Grader implements PartGrader<LaunchingContext> {
         return l;
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, Integer> wordOccurrences(Path path, int limit) {
         String content = ThrowingFunction.sneaky((Path p) -> Files.readString(p)).apply(path);
 
@@ -79,10 +73,10 @@ public class Part5Grader implements PartGrader<LaunchingContext> {
             .stream()
             .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
             .limit(limit);
-        Collector<Map.Entry<String, Long>, ?, Map> collector = Collectors.<Map.Entry<String, Long>, String, Integer, Map>toMap(
+        Collector<Map.Entry<String, Long>, ?, Map> collector = Collectors.toMap(
             Map.Entry::getKey,
             e -> e.getValue().intValue(),
-            (v1, v2) -> v1 + v2,
+            Integer::sum,
             LinkedHashMap::new);
         return stream.collect(collector);
     }

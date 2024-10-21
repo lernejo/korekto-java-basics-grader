@@ -1,5 +1,5 @@
 # Exercice commencé
-Votre note est de **2**/12.
+Votre note est de **2**/13.
 
 ## Détail
 * Hello World: 2/2
@@ -15,10 +15,10 @@ Votre note est de **2**/12.
 * Frequency command: 0/1
     * Process exited prematurely
 
-* Refactoring: 0/2
+* Refactoring: 0/4
     * Unable to read **src/Launcher.java** file: NoSuchFileException
 
-* Predict command: 0/3
+* Predict command: 0/2
     * Process exited prematurely
 
 

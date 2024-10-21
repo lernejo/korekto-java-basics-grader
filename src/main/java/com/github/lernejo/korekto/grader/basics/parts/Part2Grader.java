@@ -3,6 +3,7 @@ package com.github.lernejo.korekto.grader.basics.parts;
 import com.github.lernejo.korekto.toolkit.GradePart;
 import com.github.lernejo.korekto.toolkit.PartGrader;
 import com.github.lernejo.korekto.toolkit.misc.InteractiveProcess;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,17 +11,9 @@ import java.util.List;
 
 import static com.github.lernejo.korekto.grader.basics.parts.LaunchingContext.easyEquals;
 
-public class Part2Grader implements PartGrader<LaunchingContext> {
-    @Override
-    public String name() {
-        return "Quit and Unknown command";
-    }
+public record Part2Grader(String name, Double maxGrade) implements PartGrader<LaunchingContext> {
 
-    @Override
-    public Double maxGrade() {
-        return 2D;
-    }
-
+    @NotNull
     @Override
     public GradePart grade(LaunchingContext context) {
         if (!context.compilationFailures.isEmpty()) {
@@ -41,7 +34,7 @@ public class Part2Grader implements PartGrader<LaunchingContext> {
         if (quitCommandBehavior.value()) {
             errors.add("Program does not quit when entering `quit` command");
         }
-        return result(errors, 2D - errors.size());
+        return result(errors, maxGrade - (errors.size() * maxGrade / 2));
     }
 
     private ValueOrGradePart<String> getUnknownCommandOutput(LaunchingContext launchingContext) {
