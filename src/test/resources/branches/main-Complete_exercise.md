@@ -1,5 +1,5 @@
 # Exercice commencé
-Votre note est de **12**/12.
+Votre note est de **13**/13.
 
 ## Détail
 * Hello World: 2/2
@@ -7,8 +7,8 @@ Votre note est de **12**/12.
 * The loop: 1/1
 * Fibonacci command: 1/1
 * Frequency command: 1/1
-* Refactoring: 2/2
-* Predict command: 3/3
+* Refactoring: 4/4
+* Predict command: 2/2
 
 
 *Analyse effectuée à 1970-01-01T00:00:00Z.*

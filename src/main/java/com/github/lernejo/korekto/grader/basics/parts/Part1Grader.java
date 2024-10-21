@@ -4,6 +4,7 @@ import com.github.lernejo.korekto.toolkit.GradePart;
 import com.github.lernejo.korekto.toolkit.PartGrader;
 import com.github.lernejo.korekto.toolkit.misc.OS;
 import com.github.lernejo.korekto.toolkit.misc.Processes;
+import org.jetbrains.annotations.NotNull;
 
 import javax.tools.*;
 import java.io.IOException;
@@ -14,21 +15,13 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.github.lernejo.korekto.grader.basics.parts.LaunchingContext.easyEquals;
 
-public class Part1Grader implements PartGrader<LaunchingContext> {
-    @Override
-    public String name() {
-        System.out.println();
-        return "Hello World";
-    }
+public record Part1Grader(String name, Double maxGrade) implements PartGrader<LaunchingContext> {
 
-    @Override
-    public Double maxGrade() {
-        return 2D;
-    }
-
+    @NotNull
     @Override
     public GradePart grade(LaunchingContext context) {
         Path binPath = context.binPath();
@@ -54,10 +47,10 @@ public class Part1Grader implements PartGrader<LaunchingContext> {
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
         Iterable<? extends JavaFileObject> compilationUnits;
-        try {
+        try (Stream<Path> files = Files.walk(context.getExercise().getRoot().resolve("src"))){
             fileManager.setLocation(StandardLocation.CLASS_OUTPUT, List.of(binPath.toFile()));
 
-            compilationUnits = fileManager.getJavaFileObjectsFromPaths(Files.walk(context.getExercise().getRoot().resolve("src"))
+            compilationUnits = fileManager.getJavaFileObjectsFromPaths(files
                 .filter(f -> !Files.isDirectory(f))
                 .filter(f -> f.toString().endsWith(".java"))
                 .collect(Collectors.toSet()));
@@ -70,7 +63,7 @@ public class Part1Grader implements PartGrader<LaunchingContext> {
         JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnits);
         boolean success = task.call();
         if (!success) {
-            context.compilationFailures.addAll(diagnostics.getDiagnostics().stream().map(d -> "l." + d.getPosition() + ": " + d.getMessage(null)).collect(Collectors.toList()));
+            context.compilationFailures.addAll(diagnostics.getDiagnostics().stream().map(d -> "l." + d.getPosition() + ": " + d.getMessage(null)).toList());
 
             Iterable<? extends JavaFileObject> onlyHelloWorldClass = fileManager.getJavaFileObjectsFromPaths(Set.of(context.getExercise().getRoot().resolve("src/HelloWorld.java")));
             task = compiler.getTask(null, fileManager, diagnostics, null, null, onlyHelloWorldClass);
@@ -89,9 +82,9 @@ public class Part1Grader implements PartGrader<LaunchingContext> {
             String cause = result.getOutput() != null ? result.getOutput() : result.getCause().getMessage();
             return result(List.of("Cannot start HelloWorld: " + cause), 0D);
         } else if (!easyEquals(result.getOutput(), expected)) {
-            return result(List.of("Wrong message, expecting **" + expected + "**, but found: `" + result.getOutput() + '`'), 1D);
+            return result(List.of("Wrong message, expecting **" + expected + "**, but found: `" + result.getOutput() + '`'), maxGrade / 2);
         } else {
-            return result(List.of(), maxGrade());
+            return result(List.of(), maxGrade);
         }
     }
 

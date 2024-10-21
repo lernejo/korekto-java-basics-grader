@@ -3,21 +3,14 @@ package com.github.lernejo.korekto.grader.basics.parts;
 import com.github.lernejo.korekto.toolkit.GradePart;
 import com.github.lernejo.korekto.toolkit.PartGrader;
 import com.github.lernejo.korekto.toolkit.misc.InteractiveProcess;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.List;
 
-public class Part3Grader implements PartGrader<LaunchingContext> {
-    @Override
-    public String name() {
-        return "The loop";
-    }
+public record Part3Grader(String name, Double maxGrade) implements PartGrader<LaunchingContext> {
 
-    @Override
-    public Double maxGrade() {
-        return 1.0;
-    }
-
+    @NotNull
     @Override
     public GradePart grade(LaunchingContext context) {
         if (!context.compilationFailures.isEmpty()) {
@@ -41,7 +34,7 @@ public class Part3Grader implements PartGrader<LaunchingContext> {
         if (count != 10) {
             return result(List.of("Expecting looping on unknown command, but could only iterate " + count + " times"), 0D);
         } else {
-            return result(List.of(), maxGrade());
+            return result(List.of(), maxGrade);
         }
     }
 }
